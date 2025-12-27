@@ -1,0 +1,192 @@
+<!--🎉 Final Summary (super short 
+1. testng.xml se execution start hota hai.
+2. DummyClass start → BaseClass inherited hai.
+3. BaseClass → @BeforeSuite → config.properties load hota hai → Usme likhe values 
+      Properties object me save ho jate.
+4. @BeforeMethod(Har test method) → browser launch + URL open.
+   4.1. lauchBrowser() → Browser launch hota hai.
+   4.2. configureBrowser() → Implicit Wait + URL open hota hai.
+        Phir browser maximize.
+        Phir URL open hota hai.
+5. Test method run karta hai → DummyClass → dummyTest().
+6. @AfterMethod → browser close.
+7. Same Process DummyClass2 ke liye repeat → Becoz testng.xml me tumne 2 classes 
+      di hain:→ 1.DummyClass  and  2.DummyClass2 → Dono ke andar @Test hai → dono run honge.
+
+   
+   
+   
+   
+   
+   
+This is the complete lifecycle. -->
+
+<!-- **TestNG kaise start hota hai → BaseClass kaise run hota hai → Browser kaise launch hota hai → Test kaise chalti hai.**
+
+
+# ✅ **1. TestNG execution always starts from testng.xml**
+
+Ye file execution ka entry point hota hai.
+
+Tumhari file:
+
+```xml
+<suite name="OrangeHRMSuite">
+    <test name="OrangeHRMTest">
+        <classes>
+            <class name="com.orangeHRM.test.DummyClass"/>
+            <class name="com.orangeHRM.test.DummyClass2"/>
+        </classes>
+    </test>
+</suite>
+```
+
+➡ TestNG sabse pehle **suite** read karta hai
+➡ Phir **test**
+➡ Phir **classes** list me jo bhi classes hain un sabko order me run karta hai.
+
+
+# ✅ **2. DummyClass → BaseClass ko inherit karti hai**
+
+Tumhari class:
+
+```java
+public class DummyClass extends BaseClass
+```
+
+Matlab DummyClass chalne se **pehle BaseClass ka @BeforeMethod method chalega**.
+
+
+# ✅ **3. BaseClass → @BeforeSuite pehle execute hota hai**
+
+BaseClass:
+
+```java
+@BeforeSuite
+public void loadConfig() throws IOException {
+    prop = new Properties();
+    FileInputStream fis = new FileInputStream("src\\main\\resources\\config.properties");
+    prop.load(fis);
+}
+```
+
+**Kya hota hai?**
+
+✔ config.properties file load hoti hai
+✔ Usme likhe values Properties object me save ho jate:
+
+```
+url = https://opensource...
+browser = chrome
+username = admin
+password = admin123
+implicitWait = 10
+```
+
+👉 Ye sari values tumare prop object me aa jati hain.
+
+
+# ✅ **4. Next → @BeforeMethod chalega (per test method)**
+
+Ye har test method se just pehle hota hai.
+
+```java
+@BeforeMethod
+public void setup() {
+    lauchBrowser();
+    configureBrowser();
+}
+```
+
+
+# **4.1 lauchBrowser() → Browser launch hota hai**
+
+```java
+String browser = prop.getProperty("browser");
+```
+
+config.properties se read hoga:
+
+```
+browser = chrome
+```
+
+So:
+
+➡ ChromeDriver create hota hai → Chrome browser launch.
+
+
+# **4.2 configureBrowser() → Implicit Wait + URL open hota hai**
+
+```java
+int implicitWait = Integer.parseInt(prop.getProperty("implicitWait"));
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(implicitWait));
+```
+
+Ye tumhari properties file me hai:
+
+```
+implicitWait = 10
+```
+
+So → Implicit wait = 10 sec set ho jata hai.
+
+Phir browser maximize
+Phir URL open hota hai:
+
+```java
+driver.get(prop.getProperty("url"));
+```
+
+config.properties me:
+
+```
+url = https://opensource-demo.orangehrmlive.com/web/index.php/auth/login
+```
+
+➡ Page load hota hai.
+
+
+# ✅ **5. Now TestNG executes your test method**
+
+### DummyClass:
+
+```java
+@Test
+public void dummyTest(){
+     String title = driver.getTitle();
+     assert title.equals("OrangeHRM") : "Test Failed";
+     System.out.println("Test Passed");
+}
+```
+
+➡ driver.getTitle() webpage ka title return karega
+➡ assertion check karega match hoga ya nahi
+➡ Print karega “Test Passed”.
+
+
+# ✅ **6. Test completed → @AfterMethod chalega**
+
+After every test method:
+
+```java
+@AfterMethod
+public void tearDown() {
+    driver.quit();
+}
+```
+
+➡ Browser close ho jata hai.
+
+
+# ➤ SAME PROCESS DummyClass2 ke liye repeat hota hai
+
+Because testng.xml me tumne 2 classes di hain:
+
+1. DummyClass
+2. DummyClass2
+
+Dono ke andar @Test hai → dono run honge.
+
+-->
+
