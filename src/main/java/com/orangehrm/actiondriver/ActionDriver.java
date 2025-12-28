@@ -22,6 +22,7 @@ import com.orangehrm.utilities.LoggerManager;
 
 public class ActionDriver extends BaseClass {
 
+	//Test checkin
 	// Variables
 	private WebDriver driver;
 	private WebDriverWait wait; // ExplicitWait- Dynamic wait
