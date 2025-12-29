@@ -24,7 +24,7 @@ public class ActionDriver extends BaseClass {
 
 	//Test checkin
 	//Testing ishan
-	// Variables
+	// Variables	
 	private WebDriver driver;
 	private WebDriverWait wait; // ExplicitWait- Dynamic wait
 //	protected static Properties prop;
